@@ -26,19 +26,19 @@ class DecoderLayer(nn.Module):
         self.norm3 = LayerNorm(d_model=d_model)
         self.dropout3 = nn.Dropout(p=drop_prob)
 
-    def forward(self, dec, enc, trg_mask, src_mask):
+    def forward(self, dec_out, enc_out, dec_self_attn_mask, dec_enc_attn_mask):
         # 1. compute self attention
-        _x = dec
-        x = self.self_attention(q=dec, k=dec, v=dec, mask=trg_mask)
+        _x = dec_out
+        x = self.self_attention(q=dec_out, k=dec_out, v=dec_out, mask=dec_self_attn_mask)
         
         # 2. add and norm
         x = self.dropout1(x)
         x = self.norm1(x + _x)
 
-        if enc is not None:
+        if enc_out is not None:
             # 3. compute encoder - decoder attention
             _x = x
-            x = self.enc_dec_attention(q=x, k=enc, v=enc, mask=src_mask)
+            x = self.enc_dec_attention(q=x, k=enc_out, v=enc_out, mask = dec_enc_attn_mask)
             
             # 4. add and norm
             x = self.dropout2(x)

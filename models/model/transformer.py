@@ -37,11 +37,11 @@ class Transformer(nn.Module):
                                n_layers=n_layers,
                                device=device)
 
-    def forward(self, src, trg):
-        src_mask = self.make_src_mask(src)
-        trg_mask = self.make_trg_mask(trg)
-        enc_src = self.encoder(src, src_mask)
-        output = self.decoder(trg, enc_src, trg_mask, src_mask)
+    def forward(self, encoder_inputs, decoder_inputs):
+        dec_enc_attn_mask = self.make_src_mask(encoder_inputs)
+        dec_self_attn_mask = self.make_trg_mask(decoder_inputs)
+        encoder_outputs = self.encoder(encoder_inputs, dec_enc_attn_mask)
+        output = self.decoder(decoder_inputs, encoder_outputs, dec_self_attn_mask, dec_enc_attn_mask)
         return output
 
     def make_src_mask(self, src):
